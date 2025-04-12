@@ -5,6 +5,24 @@ import secrets
 client = TestClient(app)
 
 
+def login():
+    jwt_payload = {
+        "username": "test",
+        "password": "`0#0T$ZFc{2",
+    }
+
+    jwt_response = client.post("/api/v1/auth/login", json=jwt_payload)
+
+    token = jwt_response.cookies.get("session_token")
+
+    return token
+
+
+token = login()
+
+expired_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlOWM3YzlhYi1lM2Y3LTQyNTQtOGFiMi0yZjNiYjU3MGI0OGMiLCJuYW1lIjoidGVzdDEiLCJpYXQiOjE3NDQ0NzEzMjAsImV4cCI6MTc0NDQ3NDkyMH0.6xyx2JWNszylWDYKbYKQXe6UXWmCw4mqRiYX-ncRuPk"
+
+
 # ---signup---
 def generate_username():
     return "test" + secrets.token_hex(16)
@@ -91,13 +109,10 @@ def test_login_good_expired_header():
         "username": "test",
         "password": "`0#0T$ZFc{2",
     }
-
+    client.cookies.set("session_token", expired_token)
     response = client.post(
         "/api/v1/auth/login",
         json=payload,
-        cookies={
-            "session_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlOWM3YzlhYi1lM2Y3LTQyNTQtOGFiMi0yZjNiYjU3MGI0OGMiLCJuYW1lIjoidGVzdDEiLCJpYXQiOjE3NDQ0NzEzMjAsImV4cCI6MTc0NDQ3NDkyMH0.6xyx2JWNszylWDYKbYKQXe6UXWmCw4mqRiYX-ncRuPk"
-        },
     )
     assert response.status_code == 200
 
@@ -107,15 +122,7 @@ def test_login_good_with_header():
         "username": "test",
         "password": "`0#0T$ZFc{2",
     }
-
-    jwt_response = client.post("/api/v1/auth/login", json=payload)
-
-    token = jwt_response.cookies.get("session_token")
-    payload = {
-        "username": "test",
-        "password": "`0#0T$ZFc{2",
-    }
-    client.cookies
+    client.cookies.set("session_token", token)
     response = client.post(
         "/api/v1/auth/login",
         json=payload,
