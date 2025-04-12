@@ -1,4 +1,5 @@
-from app.core.auth.credential import build_jwt, verify_jwt
+from app.core.auth.jwt import verify_jwt
+from app.core.auth.jwt import build_jwt
 
 
 def test_verify_jwt():

@@ -4,7 +4,9 @@ import app.core.auth.credential as auth
 
 from app.main import get_db_manager
 from app.core.db.database_manager import DatabaseManager
+
 from app.schema.jwt import JWTAuthResult
+from app.core.auth import jwt
 
 auth_router = APIRouter()
 
@@ -37,7 +39,7 @@ def user_login(
     payload: UserLogin,
     response: Response,
     database_manager: DatabaseManager = Depends(get_db_manager),
-    jwt_auth: JWTAuthResult = Depends(auth.wrapped_verify_jwt),
+    jwt_auth: JWTAuthResult = Depends(jwt.wrapped_verify_jwt),
 ):
     if all(jwt_auth.payload.model_dump().values()) and jwt_auth.error == None:
         return {"status": "Already Signed In"}
@@ -62,7 +64,7 @@ def user_login(
         )
 
     # build and sign jwt
-    jwt_token = auth.build_jwt(user_id, username)
+    jwt_token = jwt.build_jwt(user_id, username)
 
     # set httponly cookie
     response.set_cookie(
