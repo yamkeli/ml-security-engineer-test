@@ -5,20 +5,33 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.secrets.secrets_manager import get_db_secrets
 from app.core.db.database_manager import DatabaseManager
 
+from app.logging_config import setup_logging
+import logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
+
 
 def get_db_manager() -> DatabaseManager:
-    # get database secrets
-    db_config = get_db_secrets()
+    try:
+        return DatabaseManager.get_instance()
+    except:
+        # get database secrets
+        db_config = get_db_secrets()
 
-    DB_NAME = db_config.get("db")
-    DB_USER = db_config.get("username")
-    DB_PASS = db_config.get("password")
-    DB_ENDPOINT = db_config.get("host")
-    DB_PORT = db_config.get("port")
+        DB_NAME = db_config.get("db")
+        DB_USER = db_config.get("username")
+        DB_PASS = db_config.get("password")
+        DB_ENDPOINT = db_config.get("host")
+        DB_PORT = db_config.get("port")
 
-    return DatabaseManager.get_instance(
-        host=DB_ENDPOINT, user=DB_USER, password=DB_PASS, database=DB_NAME, port=DB_PORT
-    )
+        return DatabaseManager.get_instance(
+            host=DB_ENDPOINT,
+            user=DB_USER,
+            password=DB_PASS,
+            database=DB_NAME,
+            port=DB_PORT,
+        )
 
 
 origins = [
