@@ -23,7 +23,7 @@ expired_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlOWM3YzlhYi1lM2
 bad_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlOWM3YzlhYi1lM2Y3LTQyNTQtOGFiMi0yZjNiYjU3MGI0OGMiLCJuYW1lIjoidGVzdDEiLCJpYXQiOjE3NDQ0NzEzMjAsImV4cCI6MTc0NDQ3NDkyMH0.6xyx2JWNszylWDYKbYKQXe6UXWmCw4mqRiYX-ncRukP"
 
 
-def test_submit_good():
+def test_submit_already_exist():
 
     form_payload = {
         "name": "Test Tester",
@@ -34,7 +34,7 @@ def test_submit_good():
     client.cookies.set("session_token", token)
     form_response = client.post("/api/v1/form/submit", json=form_payload)
 
-    assert form_response.status_code == 201
+    assert form_response.status_code == 409
 
 
 def test_submit_expired_jwt():
@@ -114,3 +114,13 @@ def test_submit_bad_ssn():
     form_response = client.post("/api/v1/form/submit", json=form_payload)
 
     assert form_response.status_code == 422
+
+
+# ---load---
+def test_load_form():
+    client.cookies.set("session_token", token)
+    form_response = client.get("/api/v1/form/load")
+
+    assert form_response.status_code == 200
+    required_keys = ("name", "email", "dob", "ssn")
+    assert all(k in form_response.json() for k in required_keys)

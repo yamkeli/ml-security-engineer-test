@@ -104,6 +104,26 @@ def test_login_good_no_header():
     assert "session_token" in response.cookies
 
 
+def test_login_wrong_password():
+    payload = {
+        "username": "test",
+        "password": "`0#0T$ZFc{3",
+    }
+
+    response = client.post("/api/v1/auth/login", json=payload)
+    assert response.status_code == 401
+
+
+def test_login_no_user():
+    payload = {
+        "username": "noexist",
+        "password": "`0#0T$ZFc{2",
+    }
+
+    response = client.post("/api/v1/auth/login", json=payload)
+    assert response.status_code == 404
+
+
 def test_login_good_expired_header():
     payload = {
         "username": "test",
@@ -123,30 +143,6 @@ def test_login_good_with_header():
         "password": "`0#0T$ZFc{2",
     }
     client.cookies.set("session_token", token)
-    response = client.post(
-        "/api/v1/auth/login",
-        json=payload,
-        cookies={"session_token": token},
-    )
+    response = client.post("/api/v1/auth/login", json=payload)
 
     assert response.status_code == 200
-
-
-def test_login_wrong_password():
-    payload = {
-        "username": "test",
-        "password": "`0#0T$ZFc{3",
-    }
-
-    response = client.post("/api/v1/auth/login", json=payload)
-    assert response.status_code == 401
-
-
-def test_login_no_user():
-    payload = {
-        "username": "noexist",
-        "password": "`0#0T$ZFc{2",
-    }
-
-    response = client.post("/api/v1/auth/login", json=payload)
-    assert response.status_code == 404
