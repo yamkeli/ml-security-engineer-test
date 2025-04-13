@@ -1,0 +1,47 @@
+name: Build and Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: ap-southeast-5
+  ECR_BACKEND_REPO: 720170540593.dkr.ecr.ap-southeast-5.amazonaws.com/ml-contact-app/backend   # e.g., 123456789012.dkr.ecr.ap-southeast-1.amazonaws.com/contact-backend
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build and push backend image
+      run: |
+        docker build -t $ECR_BACKEND_REPO:latest ./backend
+        docker push $ECR_BACKEND_REPO:latest
+
+    - name: Deploy to EC2 via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin $ECR_BACKEND_REPO
+          cd ~/contact-app
+          git pull origin main
+          cp docker-compose.yml ~/contact-app/
+          docker stack deploy -c docker-compose.yml contact-app
