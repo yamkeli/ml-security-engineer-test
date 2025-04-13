@@ -1,4 +1,5 @@
 import logging
+from types import NoneType
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic_core import ValidationError
 
@@ -57,7 +58,7 @@ def submit_form(
                 )
                 raise HTTPException(401, {"status": "Token is invalid."})
 
-            if isinstance(jwt_auth.error, None):
+            if isinstance(jwt_auth.error, NoneType):
                 logger.warning(f"{ip}: No token sent, user_id: {jwt_auth.payload.sub}")
                 raise HTTPException(400, {"status": "No JWT Token found."})
 
@@ -123,9 +124,8 @@ def load_contact_info(
                 )
                 raise HTTPException(401, {"status": "Token is invalid."})
 
-            if isinstance(jwt_auth.error, None):
-                logger.warning(f"{ip}: No token sent, user_id: {jwt_auth.payload.sub}")
-                raise HTTPException(400, {"status": "No JWT Token found."})
+            if isinstance(jwt_auth.error, NoneType):
+                return None
 
         # from verified jwt
         user_id = jwt_auth.payload.sub

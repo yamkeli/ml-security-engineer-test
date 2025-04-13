@@ -101,8 +101,8 @@ def user_login(
             key="session_token",
             value=jwt_token,
             httponly=True,  # Makes the cookie inaccessible to JavaScript
-            secure=True,  # Ensures cookie is only sent over HTTPS
-            samesite="Strict",  # Or "Strict" / "None" depending on your use case
+            # secure=True,  # Ensures cookie is only sent over HTTPS
+            samesite="None",  # For CSRF
         )
 
         logger.info(f"{username} logged in successfully.")
