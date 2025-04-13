@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self';"> -->
+    <title>Contact Info App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.5/purify.min.js" integrity="sha512-/CUtA84sWWqWEBejNrrtWa7Yc4cth3Ome2ymvCKOo9YcZ4sh98tndUy4LutE2xGcAgD4fyz16y+gSyJdGCB5ww==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    
+    <script src="scripts.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    <header>
+        <h1>Contact Info App</h1>
+    </header>
+    
+    <div class="container">
+        <nav>
+            <button type="button" id="signup-btn" data-form="signup">Sign Up</button>
+            <button type="button" id="login-btn" data-form="login">Log In</button>
+            <button type="button" id="personal-btn" data-form="personal">Personal Information</button>
+        </nav>
+        
+        <!-- Sign Up Form -->
+        <div id="signup" class="form-section active">
+            <h2>Create an Account</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="signup-username">Username</label>
+                    <input type="text" id="signup-username" name="username" autocomplete="username" required>
+                    <div id="username-error" class="error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" name="password" autocomplete="new-password" required>
+                    <div id="password-error" class="error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" autocomplete="new-password" required>
+                    <div id="confirm-password-error" class="error"></div>
+                </div>
+                <button type="submit">Sign Up</button>
+            </form>
+        </div>
+        
+        <!-- Login Form -->
+        <div id="login" class="form-section">
+            <h2>Log In</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">Username</label>
+                    <input type="text" id="login-username" name="username" autocomplete="username" required>
+                    <div id="login-username-error" class="error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" name="password" autocomplete="current-password" required>
+                    <div id="login-password-error" class="error"></div>
+                </div>
+                <button type="submit">Log In</button>
+            </form>
+        </div>
+        
+        <!-- Personal Information Form -->
+        <div id="personal" class="form-section">
+            <h2>Personal Information</h2>
+            <form id="personal-form">
+                <div class="form-group">
+                    <label for="full-name">Full Name</label>
+                    <input type="text" id="full-name" name="full-name" autocomplete="name" required>
+                    <div id="name-error" class="error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="personal-email">Email</label>
+                    <input type="email" id="personal-email" name="email" autocomplete="email" required>
+                    <div id="personal-email-error" class="error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+                    <input type="date" id="dob" name="dob" autocomplete="bday" required>
+                    <div id="dob-error" class="error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="ssn">Social Security Number</label>
+                    <input type="text" id="ssn" name="ssn" placeholder="XXX-XX-XXXX" autocomplete="off" required>
+                    <div id="ssn-error" class="error"></div>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
