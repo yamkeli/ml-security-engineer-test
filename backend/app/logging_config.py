@@ -41,6 +41,16 @@ LOGGING_CONFIG = {
             "handlers": ["console", "file"],
             "propagate": False,
         },
+        "disabled_logger": {
+            "level": "ERROR",
+            "handlers": ["console", "file"],
+            "propagate": False,
+        },
+        "watchfiles.main": {
+            "level": "ERROR",
+            "handlers": ["console", "file"],
+            "propagate": False,
+        },
     },
 }
 

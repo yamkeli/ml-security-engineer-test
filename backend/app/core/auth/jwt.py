@@ -59,5 +59,5 @@ def verify_jwt(token: str) -> JWTAuthResult:
 def wrapped_verify_jwt(request: Request) -> JWTAuthResult:
     token = request.cookies.get("session_token", None)
     if not token:
-        return JWTAuthResult({"sub": "", "name": "", "iat": 0, "exp": 0}, DecodeError)
+        return JWTAuthResult({"sub": "", "name": "", "iat": 0, "exp": 0}, None)
     return verify_jwt(token)

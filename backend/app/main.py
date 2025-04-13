@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.secrets.secrets_manager import get_db_secrets
@@ -7,6 +7,8 @@ from app.core.db.database_manager import DatabaseManager
 
 from app.logging_config import setup_logging
 import logging
+
+from app.utils.utils import get_ip
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -66,5 +68,6 @@ async def lifespan(app: FastAPI):
 
 
 @app.get("/health", status_code=200)
-def health_check():
+def health_check(request: Request):
+    print(get_ip(request))
     return {"status": "ok"}
