@@ -1,4 +1,5 @@
 from typing import Literal
+
 from argon2 import PasswordHasher, Type
 from argon2.exceptions import VerificationError
 
@@ -20,11 +21,9 @@ def check_password(password_hash: str, validated_password: str) -> Literal[True]
         hasher.verify(password_hash, validated_password)
 
     except VerificationError as e:
-        # log()
         raise e
 
     except Exception as e:
-        # log()
         raise e
 
     return True
@@ -61,3 +60,22 @@ def store_credentials(
         return user_id
     except:
         raise Exception
+
+
+def retrieve_pass_hash(
+    username: str, database_manager: DatabaseManager
+) -> tuple[str, str, str]:
+    query = """
+    SELECT user_id, username, password_hash
+    FROM "user"
+    WHERE username = %s
+    """
+
+    params = [username]
+
+    query_result = database_manager.execute_query(query, params)
+
+    if query_result:
+        return query_result[0]
+    else:
+        return ("", "", "")
