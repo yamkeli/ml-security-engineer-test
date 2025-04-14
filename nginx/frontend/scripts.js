@@ -1,7 +1,7 @@
 let loggedIn = false;
 
 // Wait for DOM to be fully loaded before attaching event listeners
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     // Anti-clickjacking protection
     if (self === top) {
         document.body.style.display = 'block';
@@ -16,16 +16,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    document.getElementById('signout-btn').addEventListener('click', logOut);
+
     // Add event listeners to forms
     document.getElementById('signup-form').addEventListener('submit', validateSignupForm);
     document.getElementById('login-form').addEventListener('submit', validateLoginForm);
     document.getElementById('personal-form').addEventListener('submit', validatePersonalForm);
 
     // ---load form data on load if avalidable---
-    loggedIn = loadFormData();
-
-    if (loggedIn) showForm('personal');
-
+    loggedIn = await loadFormData();
+    console.log(loggedIn);
+    if (loggedIn) {
+        showForm('personal');
+        showLogOut();
+    }
 });
 
 const baseUrl = ''
@@ -37,6 +41,33 @@ function setErrorMessage(elementId, message) {
         // Use textContent instead of innerHTML to prevent XSS
         element.textContent = DOMPurify.sanitize(message);
     }
+}
+
+async function logOut() {
+    try {
+        const response = await fetch(baseUrl+'/api/v1/auth/logout', {
+          method: 'GET',
+        });
+    
+        if (response.ok) {
+          const result = await response.json();
+          showForm('login');
+          loggedIn = false;
+          hideLogOut();
+        } else {
+          console.error('Failed to get:', response.statusText);
+        }
+      } catch (err) {
+        console.error('Error getting payload:', err);
+      }
+}
+
+function hideLogOut() {
+    document.getElementById('signout-btn').style.display = 'none';
+}
+
+function showLogOut(event) {
+    document.getElementById('signout-btn').style.display = 'inline';
 }
 
 // Show the selected form and hide others
@@ -168,6 +199,7 @@ async function validateSignupForm(event) {
             alert(`Sign up successful! Welcome ${sanitizeInput(responseUsername)}`);
             document.getElementById('signup-form').reset();
             showForm('personal');
+            showLogOut();
         } else {
             alert("An error has occured, please try again");
         }
@@ -215,6 +247,7 @@ async function validateLoginForm(event) {
             alert(`Login successful! Welcome ${sanitizeInput(responseUsername)}`);
             document.getElementById('login-form').reset();
             showForm('personal');
+            showLogOut();
         } else {
             alert("An error has occured, please try again");
         }

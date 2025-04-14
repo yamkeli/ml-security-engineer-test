@@ -132,3 +132,14 @@ def user_login(
     except Exception as e:
         logger.error(e)
         raise HTTPException(500, {"status": "An internal server error has occured."})
+
+
+@auth_router.get("/logout")
+def logout(response: Response):
+    response.delete_cookie(
+        key="session_token",
+        httponly=True,  # Makes the cookie inaccessible to JavaScript
+        secure=True,  # Ensures cookie is only sent over HTTPS
+        samesite="Strict",  # For CSRF
+    )
+    return {"status": "Logged out"}
