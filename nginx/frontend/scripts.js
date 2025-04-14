@@ -1,3 +1,5 @@
+let loggedIn = false;
+
 // Wait for DOM to be fully loaded before attaching event listeners
 document.addEventListener('DOMContentLoaded', function() {
     // Anti-clickjacking protection
@@ -20,7 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('personal-form').addEventListener('submit', validatePersonalForm);
 
     // ---load form data on load if avalidable---
-    loadFormData();
+    loggedIn = loadFormData();
+
+    if (loggedIn) showForm('personal');
 
 });
 
@@ -107,7 +111,9 @@ async function loadFormData() {
         document.getElementById('ssn').value = ssn;
         document.getElementById('ssn').disabled = true;
 
+        return true
     }
+    return false
 }
 
 
@@ -161,6 +167,9 @@ async function validateSignupForm(event) {
         if (result) {
             alert(`Sign up successful! Welcome ${sanitizeInput(responseUsername)}`);
             document.getElementById('signup-form').reset();
+            showForm('personal');
+        } else {
+            alert("An error has occured, please try again");
         }
     }
     
@@ -199,12 +208,15 @@ async function validateLoginForm(event) {
             password: password        
         }
 
-        const result = await postApi('/api/v1/auth/login', payload)
+        const result = await postApi('/api/v1/auth/login', payload, true)
         const responseUsername = result.username
 
         if (result) {
             alert(`Login successful! Welcome ${sanitizeInput(responseUsername)}`);
             document.getElementById('login-form').reset();
+            showForm('personal');
+        } else {
+            alert("An error has occured, please try again");
         }
     }
     
@@ -265,6 +277,9 @@ async function validatePersonalForm(event) {
         if (result) {
             alert('Personal information submitted successfully!');
             document.getElementById('personal-form').reset();
+            loadFormData();
+        } else {
+            alert("An error has occured, please try again");
         }
     }
     
