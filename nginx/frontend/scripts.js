@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-const baseUrl = 'http://127.0.0.1:8000'
+const baseUrl = ''
 
 // Safe DOM manipulation
 function setErrorMessage(elementId, message) {
