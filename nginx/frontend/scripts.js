@@ -89,7 +89,7 @@ async function loadFormData() {
       } catch (err) {
         console.error('Error getting payload:', err);
       }
-      if (!result) {
+      if (result) {
         const name = result.name;
         const email = result.email;
         const dob = result.dob;
