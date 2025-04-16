@@ -1,4 +1,5 @@
 import logging
+from types import NoneType
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic_core import ValidationError
 
@@ -43,23 +44,23 @@ def submit_form(
                 logger.warning(
                     f"{ip}: Expired token used by user_id: {jwt_auth.payload.sub}"
                 )
-                raise HTTPException(401, {"status": "Token is expired."})
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
             if isinstance(jwt_auth.error, DecodeError):
                 logger.warning(f"{ip}: Token error user_id: {jwt_auth.payload.sub}")
-                raise HTTPException(400, {"status": "Error in decoding token."})
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
             if isinstance(
-                jwt_auth.error, (InvalidAlgorithmError, ExpiredSignatureError)
+                jwt_auth.error, (InvalidAlgorithmError, InvalidSignatureError)
             ):
                 logger.warning(
                     f"{ip}: Invalid token used by user_id: {jwt_auth.payload.sub}"
                 )
-                raise HTTPException(401, {"status": "Token is invalid."})
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
-            if isinstance(jwt_auth.error, None):
+            if isinstance(jwt_auth.error, NoneType):
                 logger.warning(f"{ip}: No token sent, user_id: {jwt_auth.payload.sub}")
-                raise HTTPException(400, {"status": "No JWT Token found."})
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
         # payload content
         name = payload.name
@@ -109,23 +110,22 @@ def load_contact_info(
                 logger.warning(
                     f"{ip}: Expired token used by user_id: {jwt_auth.payload.sub}"
                 )
-                raise HTTPException(401, {"status": "Token is expired."})
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
             if isinstance(jwt_auth.error, DecodeError):
                 logger.warning(f"{ip}: Token error user_id: {jwt_auth.payload.sub}")
-                raise HTTPException(400, {"status": "Error in decoding token."})
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
             if isinstance(
-                jwt_auth.error, (InvalidAlgorithmError, ExpiredSignatureError)
+                jwt_auth.error, (InvalidAlgorithmError, InvalidSignatureError)
             ):
                 logger.warning(
                     f"{ip}: Invalid token used by user_id: {jwt_auth.payload.sub}"
                 )
-                raise HTTPException(401, {"status": "Token is invalid."})
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
-            if isinstance(jwt_auth.error, None):
-                logger.warning(f"{ip}: No token sent, user_id: {jwt_auth.payload.sub}")
-                raise HTTPException(400, {"status": "No JWT Token found."})
+            if isinstance(jwt_auth.error, NoneType):
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
         # from verified jwt
         user_id = jwt_auth.payload.sub
@@ -134,6 +134,9 @@ def load_contact_info(
         name, email, dob, ssn_enc, dek_enc, user_id = form_handling.load_contact_info(
             user_id, database_manager
         )
+
+        if not name:
+            return None
 
         ssn = decrypt.decryption(bytes(ssn_enc), bytes(dek_enc))
 

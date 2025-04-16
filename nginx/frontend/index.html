@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline';">
-    <title>User Portal</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.1/purify.min.js"></script>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self';">
+    <title>Contact Info App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.5/purify.min.js" integrity="sha512-/CUtA84sWWqWEBejNrrtWa7Yc4cth3Ome2ymvCKOo9YcZ4sh98tndUy4LutE2xGcAgD4fyz16y+gSyJdGCB5ww==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    
     <script src="scripts.js"></script>
     <link rel="stylesheet" href="style.css">
 
 </head>
 <body>
     <header>
-        <h1>User Portal</h1>
+        <h1>Contact Info App</h1>
+        <div class="signout-div">
+            <button id="signout-btn" class="signout-btn">Log out</button>
+        </div>
     </header>
     
     <div class="container">
@@ -26,16 +29,10 @@
         <div id="signup" class="form-section active">
             <h2>Create an Account</h2>
             <form id="signup-form">
-                <input type="hidden" name="csrf_token" id="signup-csrf" value="">
                 <div class="form-group">
                     <label for="signup-username">Username</label>
                     <input type="text" id="signup-username" name="username" autocomplete="username" required>
                     <div id="username-error" class="error"></div>
-                </div>
-                <div class="form-group">
-                    <label for="signup-email">Email</label>
-                    <input type="email" id="signup-email" name="email" autocomplete="email" required>
-                    <div id="signup-email-error" class="error"></div>
                 </div>
                 <div class="form-group">
                     <label for="signup-password">Password</label>
@@ -55,11 +52,10 @@
         <div id="login" class="form-section">
             <h2>Log In</h2>
             <form id="login-form">
-                <input type="hidden" name="csrf_token" id="login-csrf" value="">
                 <div class="form-group">
-                    <label for="login-email">Email</label>
-                    <input type="email" id="login-email" name="email" autocomplete="email" required>
-                    <div id="login-email-error" class="error"></div>
+                    <label for="login-username">Username</label>
+                    <input type="text" id="login-username" name="username" autocomplete="username" required>
+                    <div id="login-username-error" class="error"></div>
                 </div>
                 <div class="form-group">
                     <label for="login-password">Password</label>
@@ -74,7 +70,6 @@
         <div id="personal" class="form-section">
             <h2>Personal Information</h2>
             <form id="personal-form">
-                <input type="hidden" name="csrf_token" id="personal-csrf" value="">
                 <div class="form-group">
                     <label for="full-name">Full Name</label>
                     <input type="text" id="full-name" name="full-name" autocomplete="name" required>

@@ -25,9 +25,7 @@ def validate_username(username: str) -> str:
         raise ValueError("Username must be between 3 and 64 characters long.")
     if not username.isalnum():
         raise ValueError("Username must be alphanumeric.")
-    if not bool(
-        re.fullmatch(r"^[a-zA-Z][a-zA-Z0-9_-]*[a-zA-Z0-9]$|^[a-zA-Z]+$", username)
-    ):
+    if not bool(re.fullmatch(r"^[a-zA-Z][a-zA-Z0-9_-]*[a-zA-Z0-9]$", username)):
         raise ValueError(
             "Username should only contain alphanumeric characters and underscore(_) or dash(-). It must start and end with alphabets."
         )

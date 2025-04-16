@@ -4,6 +4,10 @@ from Crypto.Cipher import AES
 import boto3
 from botocore.exceptions import ClientError
 
+from app.api.v1.config import kms_key
+
+SSN_KEK_KEY = kms_key["ssn_kek"]
+
 
 def _decrypt_aes_ssn(blob: bytes, dek: bytes) -> bytes:
     nonce = blob[:16]  # first 16 bytes
@@ -18,7 +22,7 @@ def _decrypt_kms_aes_dek(dek_enc: bytes) -> bytes:
     kms_client = session.client(service_name="kms", region_name="ap-southeast-5")
     try:
         kms_response = kms_client.decrypt(
-            KeyId="ec7f7582-86fd-464f-b62d-710b5a512aba",
+            KeyId=SSN_KEK_KEY,
             CiphertextBlob=dek_enc,
             EncryptionAlgorithm="SYMMETRIC_DEFAULT",
         )

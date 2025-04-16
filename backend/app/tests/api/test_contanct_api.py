@@ -3,11 +3,19 @@ from app.main import app
 
 client = TestClient(app)
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+GOOD_USERNAME = os.getenv("GOOD_USERNAME")
+GOOD_PASSWORD = os.getenv("GOOD_PASSWORD")
+
 
 def login():
     jwt_payload = {
-        "username": "test",
-        "password": "`0#0T$ZFc{2",
+        "username": GOOD_USERNAME,
+        "password": GOOD_PASSWORD,
     }
 
     jwt_response = client.post("/api/v1/auth/login", json=jwt_payload)
@@ -48,7 +56,6 @@ def test_submit_expired_jwt():
     form_response = client.post("/api/v1/form/submit", json=form_payload)
 
     assert form_response.status_code == 401
-    assert form_response.json() == {"detail": {"status": "Token is expired."}}
 
 
 def test_submit_bad_jwt():
@@ -61,7 +68,7 @@ def test_submit_bad_jwt():
     client.cookies.set("session_token", bad_token)
     form_response = client.post("/api/v1/form/submit", json=form_payload)
 
-    assert form_response.status_code == 400
+    assert form_response.status_code == 401
 
 
 def test_submit_bad_name():

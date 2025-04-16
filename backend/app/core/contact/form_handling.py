@@ -27,6 +27,7 @@ def store_contact_info(
     try:
         database_manager.execute_query(query, params, return_result=False)
     except UniqueViolation as e:
+        print(e)
         raise e
     except Exception as e:
         raise e
@@ -46,4 +47,4 @@ def load_contact_info(
 
     if result:
         return result[0]
-    return ()
+    return (None, None, None, None, None, None)

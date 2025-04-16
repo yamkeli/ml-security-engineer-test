@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 def user_signup(
     payload: UserSignup,
     request: Request,
+    response: Response,
     database_manager: DatabaseManager = Depends(get_db_manager),
 ):
     try:
@@ -31,7 +32,7 @@ def user_signup(
         user_exist = auth.check_username_exist(username, database_manager)
         if user_exist:
             ip = get_ip(request)
-            logger.warn(f"{ip}: Existing username: {username} attempted sign up.")
+            logger.warning(f"{ip}: Existing username: {username} attempted sign up.")
             raise HTTPException(
                 status.HTTP_409_CONFLICT, {"status": "Username already exists."}
             )
@@ -43,6 +44,18 @@ def user_signup(
         user_id = auth.store_credentials(username, password_hash, database_manager)
 
         logger.info(f"New Sign Up: {user_id} - {username}")
+
+        # build and sign jwt
+        jwt_token = jwt.build_jwt(user_id, username)
+
+        # set httponly cookie
+        response.set_cookie(
+            key="session_token",
+            value=jwt_token,
+            httponly=True,  # Makes the cookie inaccessible to JavaScript
+            secure=True,  # Ensures cookie is only sent over HTTPS
+            samesite="Strict",  # For CSRF
+        )
 
         return {"status": "Sign up successful", "username": username}
 
@@ -80,7 +93,9 @@ def user_login(
         if not user_id:
             ip = get_ip(request)
             logger.warning(f"{ip}: Attempted login with invalid username: {username}")
-            raise HTTPException(404, {"status": "User not found"})
+            raise HTTPException(
+                status.HTTP_401_UNAUTHORIZED, {"status": "Invalid credentials."}
+            )
 
         # check password against hash
         try:
@@ -90,7 +105,7 @@ def user_login(
             ip = get_ip(request)
             logger.warning(f"{ip}: Wrong password login attempt: {username}")
             raise HTTPException(
-                status.HTTP_401_UNAUTHORIZED, {"status": "Wrong password provided"}
+                status.HTTP_401_UNAUTHORIZED, {"status": "Invalid credentials."}
             )
 
         # build and sign jwt
@@ -102,7 +117,7 @@ def user_login(
             value=jwt_token,
             httponly=True,  # Makes the cookie inaccessible to JavaScript
             secure=True,  # Ensures cookie is only sent over HTTPS
-            samesite="Strict",  # Or "Strict" / "None" depending on your use case
+            samesite="Strict",  # For CSRF
         )
 
         logger.info(f"{username} logged in successfully.")
@@ -119,3 +134,14 @@ def user_login(
     except Exception as e:
         logger.error(e)
         raise HTTPException(500, {"status": "An internal server error has occured."})
+
+
+@auth_router.get("/logout")
+def logout(response: Response):
+    response.delete_cookie(
+        key="session_token",
+        httponly=True,  # Makes the cookie inaccessible to JavaScript
+        secure=True,  # Ensures cookie is only sent over HTTPS
+        samesite="Strict",  # For CSRF
+    )
+    return {"status": "Logged out"}
