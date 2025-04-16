@@ -263,6 +263,7 @@ async function validateLoginForm(event) {
             alert(`Login successful! Welcome ${sanitizeInput(responseUsername)}`);
             document.getElementById('login-form').reset();
             showForm('personal');
+            loadFormData();
             showLogOut();
         } else {
             alert("An error has occured, please try again");

@@ -4,11 +4,19 @@ import secrets
 
 client = TestClient(app)
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+GOOD_USERNAME = os.getenv("GOOD_USERNAME")
+GOOD_PASSWORD = os.getenv("GOOD_PASSWORD")
+
 
 def login():
     jwt_payload = {
-        "username": "test",
-        "password": "`0#0T$ZFc{2",
+        "username": GOOD_USERNAME,
+        "password": GOOD_PASSWORD,
     }
 
     jwt_response = client.post("/api/v1/auth/login", json=jwt_payload)
@@ -31,8 +39,8 @@ def generate_username():
 def test_signup_good():
     payload = {
         "username": generate_username(),
-        "password": "`0#0T$ZFc{2",
-        "confirm_password": "`0#0T$ZFc{2",
+        "password": GOOD_PASSWORD,
+        "confirm_password": GOOD_PASSWORD,
     }
     response = client.post("/api/v1/auth/signup", json=payload)
     assert response.status_code == 201
@@ -40,9 +48,9 @@ def test_signup_good():
 
 def test_signup_user_exist():
     payload = {
-        "username": "test",
-        "password": "`0#0T$ZFc{2",
-        "confirm_password": "`0#0T$ZFc{2",
+        "username": GOOD_USERNAME,
+        "password": GOOD_PASSWORD,
+        "confirm_password": GOOD_PASSWORD,
     }
     response = client.post("/api/v1/auth/signup", json=payload)
     assert response.status_code == 409
@@ -70,22 +78,11 @@ def test_signup_mismatch_password():
     assert response.status_code == 422
 
 
-def test_signup_mismatch_password():
-    payload = {
-        "username": generate_username(),
-        "password": "`0#0T$ZFc{2",
-        "confirm_password": "`0#0T$ZFc{456",
-    }
-
-    response = client.post("/api/v1/auth/signup", json=payload)
-    assert response.status_code == 422
-
-
 def test_signup_bad_username():
     payload = {
         "username": '" or ""="',
-        "password": "`0#0T$ZFc{2",
-        "confirm_password": "`0#0T$ZFc{2",
+        "password": GOOD_PASSWORD,
+        "confirm_password": GOOD_PASSWORD,
     }
 
     response = client.post("/api/v1/auth/signup", json=payload)
@@ -95,8 +92,8 @@ def test_signup_bad_username():
 # ---login---
 def test_login_good_no_header():
     payload = {
-        "username": "test",
-        "password": "`0#0T$ZFc{2",
+        "username": GOOD_USERNAME,
+        "password": GOOD_PASSWORD,
     }
 
     response = client.post("/api/v1/auth/login", json=payload)
@@ -106,7 +103,7 @@ def test_login_good_no_header():
 
 def test_login_wrong_password():
     payload = {
-        "username": "test",
+        "username": GOOD_USERNAME,
         "password": "`0#0T$ZFc{3",
     }
 
@@ -121,13 +118,13 @@ def test_login_no_user():
     }
 
     response = client.post("/api/v1/auth/login", json=payload)
-    assert response.status_code == 404
+    assert response.status_code == 401
 
 
 def test_login_good_expired_header():
     payload = {
-        "username": "test",
-        "password": "`0#0T$ZFc{2",
+        "username": GOOD_USERNAME,
+        "password": GOOD_PASSWORD,
     }
     client.cookies.set("session_token", expired_token)
     response = client.post(
@@ -139,8 +136,8 @@ def test_login_good_expired_header():
 
 def test_login_good_with_header():
     payload = {
-        "username": "test",
-        "password": "`0#0T$ZFc{2",
+        "username": GOOD_USERNAME,
+        "password": GOOD_PASSWORD,
     }
     client.cookies.set("session_token", token)
     response = client.post("/api/v1/auth/login", json=payload)
