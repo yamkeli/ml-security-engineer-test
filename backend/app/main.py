@@ -38,7 +38,7 @@ def get_db_manager() -> DatabaseManager:
 
 origins = ["http://localhost:8080", "http://localhost:3000", "http://localhost"]
 
-app = FastAPI(root_path="/api")
+app = FastAPI(root_path="/api", redoc_url=None, docs_url=None)
 
 # CORS (example setup)
 app.add_middleware(
