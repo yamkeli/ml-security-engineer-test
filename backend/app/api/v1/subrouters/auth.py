@@ -32,7 +32,7 @@ def user_signup(
         user_exist = auth.check_username_exist(username, database_manager)
         if user_exist:
             ip = get_ip(request)
-            logger.warn(f"{ip}: Existing username: {username} attempted sign up.")
+            logger.warning(f"{ip}: Existing username: {username} attempted sign up.")
             raise HTTPException(
                 status.HTTP_409_CONFLICT, {"status": "Username already exists."}
             )
