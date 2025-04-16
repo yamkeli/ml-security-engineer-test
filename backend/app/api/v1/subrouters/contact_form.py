@@ -44,23 +44,23 @@ def submit_form(
                 logger.warning(
                     f"{ip}: Expired token used by user_id: {jwt_auth.payload.sub}"
                 )
-                raise HTTPException(401, {"status": "Token is expired."})
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
             if isinstance(jwt_auth.error, DecodeError):
                 logger.warning(f"{ip}: Token error user_id: {jwt_auth.payload.sub}")
-                raise HTTPException(400, {"status": "Error in decoding token."})
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
             if isinstance(
-                jwt_auth.error, (InvalidAlgorithmError, ExpiredSignatureError)
+                jwt_auth.error, (InvalidAlgorithmError, InvalidSignatureError)
             ):
                 logger.warning(
                     f"{ip}: Invalid token used by user_id: {jwt_auth.payload.sub}"
                 )
-                raise HTTPException(401, {"status": "Token is invalid."})
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
             if isinstance(jwt_auth.error, NoneType):
                 logger.warning(f"{ip}: No token sent, user_id: {jwt_auth.payload.sub}")
-                raise HTTPException(400, {"status": "No JWT Token found."})
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
         # payload content
         name = payload.name
@@ -110,19 +110,19 @@ def load_contact_info(
                 logger.warning(
                     f"{ip}: Expired token used by user_id: {jwt_auth.payload.sub}"
                 )
-                raise HTTPException(401, {"status": "Token is expired."})
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
             if isinstance(jwt_auth.error, DecodeError):
                 logger.warning(f"{ip}: Token error user_id: {jwt_auth.payload.sub}")
-                raise HTTPException(400, {"status": "Error in decoding token."})
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
             if isinstance(
-                jwt_auth.error, (InvalidAlgorithmError, ExpiredSignatureError)
+                jwt_auth.error, (InvalidAlgorithmError, InvalidSignatureError)
             ):
                 logger.warning(
                     f"{ip}: Invalid token used by user_id: {jwt_auth.payload.sub}"
                 )
-                raise HTTPException(401, {"status": "Token is invalid."})
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
             if isinstance(jwt_auth.error, NoneType):
                 return None

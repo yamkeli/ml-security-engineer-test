@@ -93,7 +93,9 @@ def user_login(
         if not user_id:
             ip = get_ip(request)
             logger.warning(f"{ip}: Attempted login with invalid username: {username}")
-            raise HTTPException(404, {"status": "User not found"})
+            raise HTTPException(
+                status.HTTP_401_UNAUTHORIZED, {"status": "Invalid credentials."}
+            )
 
         # check password against hash
         try:
@@ -103,7 +105,7 @@ def user_login(
             ip = get_ip(request)
             logger.warning(f"{ip}: Wrong password login attempt: {username}")
             raise HTTPException(
-                status.HTTP_401_UNAUTHORIZED, {"status": "Wrong password provided"}
+                status.HTTP_401_UNAUTHORIZED, {"status": "Invalid credentials."}
             )
 
         # build and sign jwt

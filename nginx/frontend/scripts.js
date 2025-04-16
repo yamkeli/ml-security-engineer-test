@@ -44,6 +44,7 @@ function setErrorMessage(elementId, message) {
 }
 
 async function logOut() {
+    alert("IMPORTANT: This sign out does not invalidate your session.")
     try {
         const response = await fetch(baseUrl+'/api/v1/auth/logout', {
           method: 'GET',
@@ -54,6 +55,21 @@ async function logOut() {
           showForm('login');
           loggedIn = false;
           hideLogOut();
+          alert("Sign out successful")
+          
+          document.getElementById('full-name').value = '';
+          document.getElementById('full-name').disabled = false;
+  
+          document.getElementById('personal-email').value = '';
+          document.getElementById('personal-email').disabled = false;
+  
+          document.getElementById('dob').value ='';
+          document.getElementById('dob').disabled = false;
+  
+          document.getElementById('ssn').value = '';
+          document.getElementById('ssn').disabled = false;
+
+        
         } else {
           console.error('Failed to get:', response.statusText);
         }
@@ -66,7 +82,7 @@ function hideLogOut() {
     document.getElementById('signout-btn').style.display = 'none';
 }
 
-function showLogOut(event) {
+function showLogOut() {
     document.getElementById('signout-btn').style.display = 'inline';
 }
 
@@ -125,10 +141,10 @@ async function loadFormData() {
         console.error('Error getting payload:', err);
       }
       if (result) {
-        const name = result.name;
-        const email = result.email;
-        const dob = result.dob;
-        const ssn = result.ssn;
+        const name = sanitizeInput(result.name);
+        const email = sanitizeInput(result.email);
+        const dob = sanitizeInput(result.dob);
+        const ssn = sanitizeInput(result.ssn);
 
         document.getElementById('full-name').value = name;
         document.getElementById('full-name').disabled = true;
