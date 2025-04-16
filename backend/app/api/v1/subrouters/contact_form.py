@@ -125,7 +125,7 @@ def load_contact_info(
                 raise HTTPException(401, {"status": "Error in authenticating."})
 
             if isinstance(jwt_auth.error, NoneType):
-                return None
+                raise HTTPException(401, {"status": "Error in authenticating."})
 
         # from verified jwt
         user_id = jwt_auth.payload.sub
@@ -134,6 +134,9 @@ def load_contact_info(
         name, email, dob, ssn_enc, dek_enc, user_id = form_handling.load_contact_info(
             user_id, database_manager
         )
+
+        if not name:
+            return None
 
         ssn = decrypt.decryption(bytes(ssn_enc), bytes(dek_enc))
 
